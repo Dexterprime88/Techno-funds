@@ -1,0 +1,6 @@
+Put Gamma,Put Vega,Put Theta,Put Delta,PCR,Put POP %,Put Volume,Put OI Change,Put Change %,Put OI,Put Bid Price,Put Offer Price,Put Intrinsic Value(Fut),Put Intrinsic Value(Spot),Put Time Value,Put LTP,Strike,IV,Instrument,Call LTP,Call Time Value,Call Intrinsic Value(Spot),Call Intrinsic Value(Fut),Call Bid Price,Call Offer Price,Call OI,Call Change %,Call OI Change,Call Volume,Call POP %,Call Delta,Call Theta,Call Vega,Call Gamma
+0.0001,0.1,-0.1,0.1,0.5,50,100,10,1,1000,10,11,0,0,10,10,26000,20,NIFTY,100,10,90,90,100,101,2000,2,20,200,60,0.2,-0.2,0.2,0.0002
+0.0002,0.2,-0.2,0.2,0.6,60,200,20,2,2000,20,21,0,0,20,20,26100,21,NIFTY,90,20,70,70,90,91,3000,3,30,300,70,0.3,-0.3,0.3,0.0003
+0.0003,0.3,-0.3,0.3,0.7,70,300,30,3,3000,30,31,0,0,30,30,26200,22,NIFTY,80,30,50,50,80,81,4000,4,40,400,80,0.4,-0.4,0.4,0.0004
+0.0004,0.4,-0.4,0.4,0.8,80,400,40,4,4000,40,41,10,10,30,40,26300,23,NIFTY,70,40,30,30,70,71,5000,5,50,500,90,0.5,-0.5,0.5,0.0005
+0.0005,0.5,-0.5,0.5,0.9,90,500,50,5,5000,50,51,20,20,30,50,26400,24,NIFTY,60,50,10,10,60,61,6000,6,60,600,95,0.6,-0.6,0.6,0.0006
