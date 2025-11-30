@@ -1,0 +1,216 @@
+
+    <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; }
+                .module { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+                .header { font-weight: bold; font-size: 1.2em; }
+                .verdict-panel { border: 2px solid black; padding: 15px; font-size: 1.1em; font-weight: bold; background-color: #f0f0f0; }
+            </style>
+        </head>
+        <body>
+            <h1>NIFTY/BANKNIFTY End-of-Day Option Chain Analysis</h1>
+
+            <div class="module">
+                <div class="header">What Each Module Means</div>
+                <ul>
+                    <li><b>Basic Summary Dashboard</b>: Overall market sentiment and key levels.</li><li><b>Maximum Gamma Pain Strike (MGP)</b>: The strike where the most pain is felt by option sellers, a potential turning point.</li><li><b>Call-Writer Pain Strike (CWP) & Put-Writer Pain Strike (PWP)</b>: Strikes where call or put writers are most vulnerable.</li><li><b>Dealer Theta-Box & Comfort Zone</b>: The range where market makers are comfortable, and theta decay is maximized.</li><li><b>One-Sided Explosion Predictor</b>: Predicts the likelihood of a strong directional move.</li><li><b>Delta Area Zones</b>: Measures the amount of trapped capital on either side of the market.</li><li><b>Dynamic Delta Skew Bands</b>: Shows the skew of bullish vs. bearish bets at different distances from the spot price.</li><li><b>Gamma Slope & Acceleration</b>: Measures the rate of change of directional risk.</li><li><b>Top 5 Gamma Walls Table</b>: The most significant levels of support and resistance based on gamma.</li><li><b>Final Institutional Verdict Panel</b>: A summary of the most critical insights for immediate trading decisions.</li>
+                </ul>
+            </div>
+
+            <div class="verdict-panel">
+                <div class="header">Final Institutional Verdict Panel</div>
+                <pre>
+    DEALER COMFORT BOX: 26400 – 26400 | BOX STRENGTH: WEAK
+    CALL WRITERS TRAPPED ABOVE 26400 | PAIN RATIO 1.44 → DIRECTIONAL BIAS – BOX UNDER PRESSURE
+    MGP NUCLEAR TRIGGER: 26400 | UPPER DELTA AREA: +0.0M (NORMAL)
+    FINAL CALL: AGGRESSIVELY NEUTRAL ABOVE 26400
+    </pre>
+            </div>
+
+            <div class="module">
+                <div class="header">Basic Summary Dashboard</div>
+                <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Metric</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Current Spot</td>
+      <td>26400.00</td>
+    </tr>
+    <tr>
+      <td>Total Put OI</td>
+      <td>15000.00</td>
+    </tr>
+    <tr>
+      <td>Total Call OI</td>
+      <td>20000.00</td>
+    </tr>
+    <tr>
+      <td>PCR (OI)</td>
+      <td>0.75</td>
+    </tr>
+    <tr>
+      <td>PCR (Volume)</td>
+      <td>0.75</td>
+    </tr>
+    <tr>
+      <td>Net OI Change</td>
+      <td>50.00</td>
+    </tr>
+    <tr>
+      <td>Highest OI Call Strike</td>
+      <td>26400.00</td>
+    </tr>
+    <tr>
+      <td>Highest OI Put Strike</td>
+      <td>26400.00</td>
+    </tr>
+    <tr>
+      <td>Highest Volume Call Strike</td>
+      <td>26400.00</td>
+    </tr>
+    <tr>
+      <td>Highest Volume Put Strike</td>
+      <td>26400.00</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+
+            <div class="module">
+                <div class="header">Maximum Gamma Pain Strike (MGP)</div>
+                <p><b>MGP Nuclear Trigger:</b> 26400</p>
+            </div>
+
+            <div class="module">
+                <div class="header">Call-Writer Pain Strike (CWP) & Put-Writer Pain Strike (PWP)</div>
+                <p><b>CWP Strike:</b> 26400</p>
+                <p><b>PWP Strike:</b> 26400</p>
+            </div>
+
+            <div class="module">
+                <div class="header">Dealer Theta-Box & Comfort Zone</div>
+                <p><b>Upper Wall:</b> 26400, <b>Lower Wall:</b> 26400</p>
+                <p><b>Box Strength:</b> 31.43%</p>
+                <p><b>Pain Ratio:</b> 1.44</p>
+            </div>
+
+            <div class="module">
+                <div class="header">One-Sided Explosion Predictor</div>
+                <p style="color:black;">DIRECTIONAL BIAS – BOX UNDER PRESSURE</p>
+            </div>
+
+            <div class="module">
+                <div class="header">Delta Area Zones</div>
+                <p style="color:black;"><b>Upper Delta Area:</b> 0</p>
+                <p style="color:black;"><b>Lower Delta Area:</b> -0</p>
+            </div>
+
+            <div class="module">
+                <div class="header">Dynamic Delta Skew Bands</div>
+                <p><b>Near (±200):</b> 1.25</p>
+                <p><b>Mid (+200 to +500):</b> inf</p>
+                <p style="color:darkgreen;"><b>Far (+500 to +1000):</b> inf</p>
+            </div>
+
+            <div class="module">
+                <div class="header">Gamma Slope & Acceleration</div>
+                <p style="color:black;"><b>Gamma Slope:</b> 0</p>
+            </div>
+
+            <div class="module">
+                <div class="header">Top 5 Gamma Walls</div>
+                <h4>Call Gamma Walls</h4>
+                <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Strike</th>
+      <th>Call Gamma</th>
+      <th>Call OI</th>
+      <th>Call OI Change</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>26400</td>
+      <td>0.0006</td>
+      <td>6000</td>
+      <td>60</td>
+    </tr>
+    <tr>
+      <td>26300</td>
+      <td>0.0005</td>
+      <td>5000</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <td>26200</td>
+      <td>0.0004</td>
+      <td>4000</td>
+      <td>40</td>
+    </tr>
+    <tr>
+      <td>26100</td>
+      <td>0.0003</td>
+      <td>3000</td>
+      <td>30</td>
+    </tr>
+    <tr>
+      <td>26000</td>
+      <td>0.0002</td>
+      <td>2000</td>
+      <td>20</td>
+    </tr>
+  </tbody>
+</table>
+                <h4>Put Gamma Walls</h4>
+                <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Strike</th>
+      <th>Put Gamma</th>
+      <th>Put OI</th>
+      <th>Put OI Change</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>26400</td>
+      <td>0.0005</td>
+      <td>5000</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <td>26300</td>
+      <td>0.0004</td>
+      <td>4000</td>
+      <td>40</td>
+    </tr>
+    <tr>
+      <td>26200</td>
+      <td>0.0003</td>
+      <td>3000</td>
+      <td>30</td>
+    </tr>
+    <tr>
+      <td>26100</td>
+      <td>0.0002</td>
+      <td>2000</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <td>26000</td>
+      <td>0.0001</td>
+      <td>1000</td>
+      <td>10</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+        </body>
+    </html>
