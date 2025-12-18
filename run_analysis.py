@@ -76,5 +76,11 @@ def main():
     fig.write_html(output_filename)
     print(f"Analysis Complete. Plot saved to {output_filename}")
 
+    print("\n" + "="*60)
+    print("NOTE: You are running the CLI script.")
+    print("To view the interactive DASHBOARD with Visualizations, run:")
+    print("   streamlit run streamlit_app.py")
+    print("="*60 + "\n")
+
 if __name__ == "__main__":
     main()
