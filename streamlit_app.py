@@ -9,8 +9,7 @@ from data_utils import (
     process_user_format_df,
     load_data_from_standard_csv,
     generate_mock_nifty_data,
-    parse_filename_dates,
-    infer_spot_price
+    parse_filename_dates
 )
 
 st.set_page_config(page_title="Net Gamma Exposure", layout="wide")
@@ -18,14 +17,14 @@ st.set_page_config(page_title="Net Gamma Exposure", layout="wide")
 st.title("Net Gamma Exposure (GEX) Analysis")
 st.markdown("""
 This tool calculates the Net Gamma Exposure profile for Nifty options to identify the **Zero Gamma Level (Flip Point)**.
-Upload your Option Chain CSV file to get started.
+**Upload multiple CSV files** (e.g., different expiries) to generate the aggregate Gamma Profile.
 """)
 
 # --- Sidebar Inputs ---
 st.sidebar.header("Configuration")
 
-# File Uploader
-uploaded_file = st.sidebar.file_uploader("Upload Option Chain CSV", type=["csv"])
+# File Uploader - Allow Multiple
+uploaded_files = st.sidebar.file_uploader("Upload Option Chain CSVs", type=["csv"], accept_multiple_files=True)
 
 # Contract Size
 contract_size = st.sidebar.number_input("Contract Size", value=50, min_value=1)
@@ -33,77 +32,73 @@ contract_size = st.sidebar.number_input("Contract Size", value=50, min_value=1)
 # --- Logic ---
 
 options_df = None
-current_spot = 22000.0 # Default
-inferred_expiry = None
-inferred_snapshot = None
+current_spot = 22000.0 # Default fallback
+inferred_spot_list = []
 
-if uploaded_file is not None:
-    try:
-        # Read the file
-        df_raw = pd.read_csv(uploaded_file)
+if uploaded_files:
+    all_data_frames = []
 
-        # Check format
-        # User format has 'Call OI', 'Put OI', 'IV' (percent)
-        is_user_format = 'Call OI' in df_raw.columns and 'Put OI' in df_raw.columns
+    st.info(f"Processing {len(uploaded_files)} file(s)...")
 
-        if is_user_format:
-            st.success("Detected Nifty Option Chain Format.")
+    for uploaded_file in uploaded_files:
+        try:
+            # Read file
+            df_raw = pd.read_csv(uploaded_file)
 
-            # Try parsing dates from filename
-            expiry_date, snapshot_date = parse_filename_dates(uploaded_file.name)
+            # Check format
+            is_user_format = 'Call OI' in df_raw.columns and 'Put OI' in df_raw.columns
 
-            if expiry_date:
-                inferred_expiry = expiry_date
-            if snapshot_date:
-                inferred_snapshot = snapshot_date
+            if is_user_format:
+                # Parse Dates from Filename
+                expiry_date, snapshot_date = parse_filename_dates(uploaded_file.name)
 
-            # Process Data
-            # We process initially to get spot inference, but we need final user inputs for dates
-            # So we might need a two-pass or just default to today if not parsed
+                # If parsed, use them. If not, we might need user input or fallback?
+                # For batch processing, individual user input is tedious.
+                # We'll rely on parsing or current timestamp.
 
-            # 1. Ask for Dates if not parsed or allow override
-            st.sidebar.subheader("Date Settings")
+                expiry_dt = expiry_date if expiry_date else pd.Timestamp.now() + pd.Timedelta(days=7) # Fallback
+                snapshot_dt = snapshot_date if snapshot_date else pd.Timestamp.now()
 
-            default_expiry = inferred_expiry if inferred_expiry else datetime.now()
-            expiry_input = st.sidebar.date_input("Expiry Date", value=default_expiry)
+                # Process
+                df_processed, spot_val = process_user_format_df(df_raw, expiry_dt, snapshot_dt)
 
-            # For snapshot, we usually assume "now" if live, or file time if historical.
-            # Let's ask user for snapshot time? Or just use file time if available.
-            # Simplification: Use file timestamp if available, else now.
+                if spot_val:
+                    inferred_spot_list.append(spot_val)
 
-            # Since data_utils needs datetime objects:
-            expiry_dt = pd.to_datetime(expiry_input)
-            snapshot_dt = inferred_snapshot if inferred_snapshot else pd.Timestamp.now()
+                all_data_frames.append(df_processed)
 
-            # Process
-            options_df, inferred_spot_val = process_user_format_df(df_raw, expiry_dt, snapshot_dt)
+            else:
+                # Standard format
+                df_std, _ = load_data_from_standard_csv(uploaded_file)
+                all_data_frames.append(df_std)
 
-            if inferred_spot_val:
-                current_spot = inferred_spot_val
+        except Exception as e:
+            st.warning(f"Skipped file {uploaded_file.name} due to error: {e}")
 
-        else:
-            st.info("Detected Standard Format (Strike, OptionType, IV, OpenInterest, ExpirationDate).")
-            # Standard loader
-            # We need to save to temp or read from buffer. pd.read_csv accepts buffer.
-            # Re-read to reset buffer position or just use df_raw
-            # Standard loader expects specific columns.
-            options_df, _ = load_data_from_standard_csv(uploaded_file)
-            # No spot inference in standard loader usually
+    if all_data_frames:
+        options_df = pd.concat(all_data_frames, ignore_index=True)
+        st.success(f"Successfully loaded {len(options_df)} option contracts from {len(uploaded_files)} files.")
 
-    except Exception as e:
-        st.error(f"Error processing file: {e}")
+        # Spot Price Logic: Use the most common inferred spot or average?
+        # Usually spot is same across files (if same snapshot time).
+        if inferred_spot_list:
+            # Take the one from the nearest expiry? Or just average?
+            # Let's take the median to avoid outliers.
+            current_spot = float(np.median(inferred_spot_list))
+
+    else:
+        st.error("No valid data found in uploaded files.")
 
 else:
-    st.info("No file uploaded. Using Mock Data for demonstration.")
+    st.info("No files uploaded. Using Mock Data for demonstration.")
     options_df = generate_mock_nifty_data(current_spot)
 
 # --- Main Spot Input ---
-# Place this after file loading so we can populate with inferred value
 st.sidebar.subheader("Market Data")
 spot_price_input = st.sidebar.number_input("Spot Price", value=float(current_spot), format="%.2f")
 
 # --- Analysis ---
-if options_df is not None:
+if options_df is not None and not options_df.empty:
 
     st.divider()
 
@@ -112,7 +107,7 @@ if options_df is not None:
     col2.metric("Contract Size", contract_size)
 
     # Calculate Profile
-    with st.spinner("Calculating Gamma Profile..."):
+    with st.spinner("Calculating Aggregate Gamma Profile..."):
         try:
             profile_df = calculate_net_gamma_profile(options_df, spot_price_input, contract_size=contract_size)
             zeros = find_zero_gamma_level(profile_df)

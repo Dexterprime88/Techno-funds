@@ -19,26 +19,32 @@ def main():
 
     options_df = None
     current_spot = default_spot
+    inferred_spot_list = []
 
     if user_files:
-        target_file = user_files[0]
-        print(f"Found user file: {target_file}")
-        try:
-            # Parse dates just for logging
-            expiry, snapshot = parse_filename_dates(target_file)
-            if expiry and snapshot:
-                 print(f"Parsed -> Expiry: {expiry}, Snapshot: {snapshot}")
+        print(f"Found {len(user_files)} NIFTY option files: {user_files}")
+        all_data_frames = []
 
-            options_df, inferred_spot = load_user_format_csv(target_file)
-            if inferred_spot:
-                current_spot = inferred_spot
-                print(f"Inferred Spot Price from Data: {inferred_spot}")
-            print("Successfully loaded user data.")
-        except Exception as e:
-            print(f"Error loading user file: {e}")
+        for file in user_files:
+            try:
+                print(f"Loading {file}...")
+                df, spot = load_user_format_csv(file)
+                all_data_frames.append(df)
+                if spot:
+                    inferred_spot_list.append(spot)
+            except Exception as e:
+                print(f"Error loading {file}: {e}")
+
+        if all_data_frames:
+            options_df = pd.concat(all_data_frames, ignore_index=True)
+            print(f"Combined {len(options_df)} option contracts.")
+
+            if inferred_spot_list:
+                current_spot = float(np.median(inferred_spot_list))
+                print(f"Inferred Combined Spot Price: {current_spot}")
 
     if options_df is None:
-        print("No valid user file found. Checking for sample_nifty_data.csv...")
+        print("No valid user files found. Checking for sample_nifty_data.csv...")
         if os.path.exists('sample_nifty_data.csv'):
             options_df, _ = load_data_from_standard_csv('sample_nifty_data.csv')
         else:
