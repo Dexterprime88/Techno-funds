@@ -83,8 +83,10 @@ def calculate_net_gamma_profile(options_df, current_spot, spot_range_pct=0.2, st
     # Ensure TimeTillExpiry is present
     if 'TimeTillExpiry' not in options_df.columns:
          now = pd.Timestamp.now()
-         options_df['TimeTillExpiry'] = (pd.to_datetime(options_df['ExpirationDate']) - now).dt.days / 365.0
-         options_df['TimeTillExpiry'] = options_df['TimeTillExpiry'].clip(lower=0.001)
+         # Calculate time diff in seconds then convert to years for better precision
+         time_diff = pd.to_datetime(options_df['ExpirationDate']) - now
+         options_df['TimeTillExpiry'] = time_diff.dt.total_seconds() / (365.0 * 24 * 3600)
+         options_df['TimeTillExpiry'] = options_df['TimeTillExpiry'].clip(lower=0.0001)
 
     from_strike = current_spot * (1 - spot_range_pct)
     to_strike = current_spot * (1 + spot_range_pct)
