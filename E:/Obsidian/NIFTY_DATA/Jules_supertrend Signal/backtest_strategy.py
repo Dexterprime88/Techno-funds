@@ -103,9 +103,12 @@ def calculate_supertrend(df, atr_period=10, factor=3.0):
 
 def run_backtest(data_path, lookback=8, weight=8.0, atr_period=10, factor=3.0, sl_atr_multiplier=2.5):
     """
-    Runs the backtest on the given CSV file.
+    Runs the backtest on the given CSV or Parquet file.
     """
-    df = pd.read_csv(data_path)
+    if str(data_path).endswith('.parquet'):
+        df = pd.read_parquet(data_path)
+    else:
+        df = pd.read_csv(data_path)
 
     # Ensure required columns exist
     required_cols = ['Open', 'High', 'Low', 'Close']
@@ -263,14 +266,14 @@ def run_backtest(data_path, lookback=8, weight=8.0, atr_period=10, factor=3.0, s
 
 if __name__ == "__main__":
     raw_folder = Path("E:/Obsidian/NIFTY_DATA/raw")
-    csv_files = glob.glob(str(raw_folder / "*.csv"))
+    data_files = glob.glob(str(raw_folder / "*.csv")) + glob.glob(str(raw_folder / "*.parquet"))
 
-    if not csv_files:
-        print(f"No CSV files found in {raw_folder}")
+    if not data_files:
+        print(f"No data files (.csv or .parquet) found in {raw_folder}")
     else:
-        for file in csv_files:
+        for file in data_files:
             print(f"\nProcessing {file}...")
-            df_result, trades = run_backtest(
+            result = run_backtest(
                 file,
                 lookback=8,
                 weight=8.0,
@@ -279,7 +282,8 @@ if __name__ == "__main__":
                 sl_atr_multiplier=2.5
             )
 
-            if df_result is not None:
+            if result is not None:
+                df_result, trades = result
                 # Summary
                 pnls = [t['pnl'] for t in trades if 'pnl' in t]
                 total_pnl = sum(pnls)
