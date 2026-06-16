@@ -268,8 +268,11 @@ if __name__ == "__main__":
     raw_folder = Path("E:/Obsidian/NIFTY_DATA/raw")
     data_files = glob.glob(str(raw_folder / "*.csv")) + glob.glob(str(raw_folder / "*.parquet"))
 
+    # Filter out VIX data files since they do not have the required OHLC structure
+    data_files = [f for f in data_files if "vix" not in os.path.basename(f).lower()]
+
     if not data_files:
-        print(f"No data files (.csv or .parquet) found in {raw_folder}")
+        print(f"No valid data files (.csv or .parquet, excluding VIX) found in {raw_folder}")
     else:
         for file in data_files:
             print(f"\nProcessing {file}...")
